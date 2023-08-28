@@ -1,0 +1,97 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	max-width: 600px;
+	margin: auto;
+	padding: 0 10px;
+}
+
+/* General */
+
+h1, h2, h3 {
+	margin-top: 30px;
+}
+
+/* Footer */
+
+footer {
+	display: none;
+}
+
+/* Matos */
+
+.matos {
+	background-color: #eee;
+	padding: 10px;
+	margin: 10px 0;
+	color: #000;
+	border-radius: 10px;
+}
+.matos a {
+	color: #609966;
+	text-decoration: none;
+}
+
+/* Form */
+
+fieldset {
+	padding: 10px;
+}
+
+legend {
+	font-weight: bold;
+}
+
+textarea {
+	resize: vertical;
+	height: 100px;
+}
+
+label,
+input,
+textarea {
+	width: 100%;
+}
+
+input[type="number"] {
+	margin-bottom: 10px;
+}
+
+button {
+	padding: 5px;
+	margin: 10px 0;
+}
+
+.out_of_stock {
+	color: red;
+}
+
+/* Collapsable fieldset */
+
+fieldset.collapsable>legend {
+	cursor: pointer;
+}
+
+fieldset.collapsable>legend:before {
+	content: "➖ ";
+}
+
+fieldset.collapsed {
+	visibility: hidden;
+	padding: 0;
+}
+
+fieldset.collapsed>legend {
+	visibility: visible;
+}
+
+fieldset.collapsed>legend:before {
+	content: "➕ ";
+}
+
+fieldset.collapsed>legend ~ * {
+	display: none;
+}

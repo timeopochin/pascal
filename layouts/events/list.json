@@ -1,0 +1,23 @@
+{
+	"matos": {{ partial "recursive.json" .Site.Data.matos_nested }},
+	"events": [
+		{{ range $k, $_ := .Pages }}
+			{{ if $k }},{{ end }}
+		{
+			"name":     "{{ .Param "title" }}",
+			"author":   "{{ .Param "author" }}",
+			"date_out": "{{ .Param "date_out" }}",
+			"date_in":  "{{ .Param "date_in" }}",
+			"matos": [
+				{{ range $k, $_ := (.Param "matos") }}
+					{{ if $k }},{{ end }}
+					{
+						"id": {{ .id }},
+						"quantity": {{ .quantity }}
+					}
+				{{ end }}
+			]
+		}
+		{{ end }}
+	]
+}

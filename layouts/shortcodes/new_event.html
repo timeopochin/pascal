@@ -1,0 +1,154 @@
+<script>
+	function getDate(id) {
+		let dateValue = document.getElementById(id).value;
+		return dateValue ? new Date(dateValue) : new Date();
+	}
+
+	function getValue(id) {
+		return document.getElementById(id).value;
+	}
+
+	function formatDate(dateObj) {
+		let year  = dateObj.getFullYear();
+		let month = (dateObj.getMonth()).toString().padStart(2, "0");
+		let date  = (dateObj.getDate()).toString().padStart(2, "0");
+		return `${year}-${month}-${date}`;
+	}
+
+	function getMatos(data, id) {
+		if (Array.isArray(data)) {
+			for (let item of data) {
+				if (item.id === id) {
+					return item;
+				}
+			}
+			return undefined
+		} 
+		for (let [section, subData] of Object.entries(data)) {
+			let item = getMatos(subData, id);
+			if (item != undefined) {
+				return item
+			}
+		}
+	}
+
+	function foreachMatos(data, func) {
+		if (Array.isArray(data)) {
+			for (let item of data) {
+				func(item);
+			}
+			return;
+		} 
+		for (let [section, subData] of Object.entries(data)) {
+			foreachMatos(subData, func);
+		}
+	}
+
+    function update() {
+        fetch("/events/index.json").then((res) => {
+            return res.json();
+        }).then((data) => {
+			let newDateOut = getDate("date_out").getTime();
+			let newDateIn  = getDate("date_in").getTime();
+            for (let event of data.events) {
+                let dateOut = (new Date(event.date_out)).getTime();
+                let dateIn  = (new Date(event.date_in)).getTime();
+                if (!(newDateOut > dateIn || newDateIn < dateOut)) {
+                    for (let eventItem of event.matos) {
+                        let eventStock = {
+                            "name":     event.name,
+                            "author":   event.author,
+                            "date_out": event.date_out,
+                            "date_in":  event.date_in,
+                            "quantity": eventItem.quantity
+                        };
+						let item = getMatos(data.matos, eventItem.id);
+                        item.stock -= eventItem.quantity;
+						item.events.push(eventStock);
+                    }
+                }
+            }
+			console.log(data.matos);
+			foreachMatos(data.matos, (item) => {
+				let stockList = document.getElementById(`matos_stock_list_${item.id}`);
+				let input     = document.getElementById(`matos_${item.id}`);
+				stockList.innerHTML = `<span id="stock_${item.id}"><b>${item.stock}</b> en stockage</span>`;
+				for (let event of item.events) {
+					let dateOut = (new Date(event.date_out)).toLocaleDateString();
+					let dateIn  = (new Date(event.date_in)).toLocaleDateString();
+					stockList.innerHTML += `<br><b>${event.quantity}</b> avec <b>${event.author}</b> du <b>${dateOut}</b> au <b>${dateIn}</b> (${event.name})`;
+				}
+				if (item.stock <= 0) {
+					input.disabled = true;
+					document.getElementById(`stock_${item.id}`).classList.add("out_of_stock");
+				} else {
+					input.setAttribute("max", item.stock);
+				}
+			});
+        });
+    }
+
+    function generateFrontMatter() {
+        fetch("/events/index.json").then((res) => {
+            return res.json();
+        }).then((data) => {
+			let title = getValue("event");
+			let author = getValue("author");
+			let newDateOut = formatDate(getDate("date_out"));
+			let newDateIn  = formatDate(getDate("date_in"));
+			let yaml = `---
+title:  ${title}
+date:   ${formatDate(new Date())}
+author: ${author}
+
+date_out: ${newDateOut}
+date_in:  ${newDateIn}
+
+matos:`;
+			foreachMatos(data.matos, (item) => {
+				let value = getValue(`matos_${item.id}`);
+				if (value) {
+					yaml += `\n  - id: ${item.id} # ${item.name}`;
+					yaml += `\n    quantity: ${value}`;
+				}
+			});
+			yaml += "\n---";
+			document.getElementById("output").textContent = yaml;
+		});
+	}
+
+	update();
+</script>
+
+<form>
+	<fieldset>
+		<legend>Info événement</legend>
+		<p>
+			<label for="event">Événement</label>
+			<input type="text" id="event" onchange="update()"/>
+		</p>
+		<p>
+			<label for="author">Personne en charge</label>
+			<input type="text" id="author" onchange="update()"/>
+		</p>
+		<p>
+			<label for="date_out">Commence le</label>
+			<input type="date" id="date_out" onchange="update()"/>
+		</p>
+		<p>
+			<label for="date_in">Fini le</label>
+			<input type="date" id="date_in" onchange="update()"/>
+		</p>
+	</fieldset>
+	<fieldset id="matos">
+		<legend>Matériel</legend>
+		{{ partial "recursive.html" .Site.Data.matos_nested }}
+	</fieldset>
+	<fieldset>
+		<legend>Métadonnées</legend>
+		<textarea id="output" readonly></textarea>
+		<button type="button" onclick="generateFrontMatter()">Générer</button>
+		<button type="button" onclick="navigator.clipboard.writeText(getValue('output'))">Copier</button>
+		<button type="button" onclick="window.open('https://github.com', '_blank').focus()">Ouvrir GitHub</button>
+	</fieldset>
+</form>

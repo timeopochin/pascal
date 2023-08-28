@@ -1,0 +1,4 @@
+baseURL = "http://example.org/"
+languageCode = "fr-FR"
+defaultContentLanguage = "fr"
+title = "Gestion du matos"

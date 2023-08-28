@@ -1,0 +1,25 @@
+{{ if (isset . 0) }}
+	[
+		{{ range $k, $_ := . }}
+			{{ if $k }},{{ end }}
+			{
+				"id": {{ .id }},
+				"name": "{{ .name }}",
+				"stock": {{ .stock }},
+				"events": []
+			}
+		{{ end }}
+	]
+{{ else }}
+	{
+		{{ $first := true }}
+		{{ range $k, $_ := . }}
+			{{ if $first }}
+				{{ $first = false }}
+			{{ else }}
+				,
+			{{ end }}
+			"{{ $k }}": {{ partial "recursive.json" . }}
+		{{ end }}
+	}
+{{ end }}

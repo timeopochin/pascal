@@ -1,0 +1,35 @@
+{{ define "main" }}
+    <h1>{{ .Title }}</h1>
+	{{ $past    := slice }}
+	{{ $ongoing := slice }}
+	{{ $future  := slice }}
+	{{ range .Pages.ByParam "date_out" }}
+		{{ $date_out := time (.Param "date_out") }}
+		{{ $date_in  := time (.Param "date_in") }}
+		{{ if lt $date_in now }}
+			{{ $past = $past | append . }}
+		{{ else if gt $date_out now }}
+			{{ $future = $future | append . }}
+		{{ else }}
+			{{ $ongoing = $ongoing | append . }}
+		{{ end }}
+	{{ end }}
+	{{ if $ongoing }}
+		<h2>En cours</h2>
+			{{ range $ongoing }}
+				{{ partial "event.html" . }}
+			{{ end }}
+	{{ end }}
+	{{ if $future }}
+	<h2>À venir</h2>
+		{{ range $future }}
+			{{ partial "event.html" . }}
+		{{ end }}
+	{{ end }}
+	{{ if $past }}
+	<h2>Passé</h2>
+		{{ range $past }}
+			{{ partial "event.html" . }}
+		{{ end }}
+	{{ end }}
+{{ end }}

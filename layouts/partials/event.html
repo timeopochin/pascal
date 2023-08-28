@@ -1,0 +1,9 @@
+<div class="event">
+    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+    <p>
+		Du
+	    <time datetime="{{ .Param "date_out" }}">{{ dateFormat "02/01/2006" (.Param "date_out") }}</time>
+		au
+	    <time datetime="{{ .Param "date_in" }}">{{ dateFormat "02/01/2006" (.Param "date_in") }}</time>
+    </p>
+</div>

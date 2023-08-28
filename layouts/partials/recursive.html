@@ -1,0 +1,16 @@
+{{ if (isset . 0) }}
+	{{ range  . }}
+		<label for="matos_{{ .id }}">
+			{{ .name }}
+			<p id="matos_stock_list_{{ .id }}"></p>
+		</label>
+		<input type="number" id="matos_{{ .id }}" min="0">
+	{{ end }}
+{{ else }}
+	{{ range $k, $_ := . }}
+		<fieldset class="collapsable collapsed">
+			<legend onclick="this.parentNode.classList.toggle('collapsed')">{{ $k | title }}</legend>
+			{{ partial "recursive.html" . }}
+		</fieldset>
+	{{ end }}
+{{ end }}

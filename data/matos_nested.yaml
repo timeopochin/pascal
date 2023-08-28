@@ -1,0 +1,31 @@
+cables:
+  - id: 1
+    name: DMX
+    stock: 5
+  - id: 2
+    name: XLR
+    stock: 8
+son:
+  enceintes:
+    subs:
+      - id: 3
+        name: Gros sub
+        stock: 2
+      - id: 4
+        name: Petit sub
+        stock: 4
+    facade:
+      - id: 5
+        name: Wide
+        stock: 2
+      - id: 6
+        name: Focus
+        stock: 7
+  micros:
+    - id: 8
+      name: SM 58
+      stock: 2
+lumiere:
+  - id: 9
+    name: Lyre
+    stock: 8
